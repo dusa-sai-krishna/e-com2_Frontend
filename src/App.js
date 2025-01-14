@@ -5,6 +5,9 @@ import HomePage from "./customer/pages/HomePage";
 import HomeSectionCarousel from "./customer/components/HomeSectionCarousel/HomeSectionCarousel";
 import Footer from "./customer/components/Footer/Footer";
 import Product from "./customer/components/Product/Product";
+import ProductDetail from "./customer/components/Product/ProductDetail";
+import Cart from "./customer/components/Cart/Cart";
+import Checkout from "./customer/components/Checkout/Checkout";
 
 function App() {
   return (
@@ -12,7 +15,10 @@ function App() {
       <Navigation />
         <div>
           {/*<HomePage />*/}
-          <Product/>
+          {/*<Product/>*/}
+          {/*<ProductDetail/>*/}
+          {/*<Cart/>*/}
+          <Checkout/>
           <Footer />
         </div>
     </div>
