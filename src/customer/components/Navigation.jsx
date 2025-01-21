@@ -12,6 +12,8 @@ import { deepPurple } from "@mui/material/colors";
 import {navigation} from "../../Data/Navigation/NavigationData";
 
 import TextField from "@mui/material/TextField";
+import {useNavigate} from "react-router-dom";
+import AuthModal from "./auth/AuthModal";
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -23,6 +25,7 @@ export default function Navigation() {
     const [anchorEl, setAnchorEl] = useState(null);
     const openUserMenu = Boolean(anchorEl);
     const jwt = localStorage.getItem("jwt");
+    const navigate = useNavigate()
 
 
 
@@ -42,7 +45,7 @@ export default function Navigation() {
     };
 
     const handleCategoryClick = (category, section, item, close) => {
-       // navigate(`/${category.id}/${section.id}/${item.id}`);
+       navigate(`/${category.id}/${section.id}/${item.id}`);
         close();
     };
 
@@ -380,7 +383,7 @@ export default function Navigation() {
 
                             <div className="ml-auto flex items-center">
                                 <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
-                                    {true ?(
+                                    {false ?(
                                         <div>
                                             <Avatar
                                                 className="text-white"
@@ -388,14 +391,13 @@ export default function Navigation() {
                                                 aria-controls={open ? "basic-menu" : undefined}
                                                 aria-haspopup="true"
                                                 aria-expanded={open ? "true" : undefined}
-                                                // onClick={handleUserClick}
                                                 sx={{
                                                     bgcolor: deepPurple[500],
                                                     color: "white",
                                                     cursor: "pointer",
                                                 }}
                                             >
-                                                R
+                                                S
                                             </Avatar>
                                             {/* <Button
                         id="basic-button"
@@ -408,14 +410,15 @@ export default function Navigation() {
                       </Button> */}
                                             <Menu
                                                 id="basic-menu"
-                                                // anchorEl={anchorEl}
-                                                // open={openUserMenu}
-                                                // onClose={handleCloseUserMenu}
+                                                anchorEl={anchorEl}
+                                                open={openUserMenu}
+                                                onClose={handleCloseUserMenu}
                                                 MenuListProps={{
                                                     "aria-labelledby": "basic-button",
                                                 }}
                                             >
-                                               <MenuItem>Profile </MenuItem><MenuItem>My Orders</MenuItem><MenuItem>Logout</MenuItem>
+                                               <MenuItem>Profile </MenuItem><MenuItem onClick={()=>navigate("/account/order")}>My Orders</MenuItem>
+                                                <MenuItem>Logout</MenuItem>
                                             </Menu>
                                         </div>
                                     ) : (
@@ -461,6 +464,8 @@ export default function Navigation() {
                     </div>
                 </nav>
             </header>
+         <AuthModal open={openAuthModal}  handleClose={handleClose}/>
+
 
         </div>
     );
