@@ -2,22 +2,32 @@ import React from 'react';
 import TextField from "@mui/material/TextField";
 import {Button, Grid} from "@mui/material";
 import {useNavigate} from "react-router-dom";
+import {getUser, login} from "../../../redux/Auth/Action";
+import {useDispatch} from "react-redux";
 
 
-const handleSubmit = (event) => {
-	event.preventDefault();
-	const data = new FormData(event.currentTarget);
-	const userData = {
-		email: data.get('email'),
-		password: data.get('password'),
-	}
-	console.log("userData",userData);
-};
+
 
 function LoginForm() {
 
 
 	const navigate = useNavigate();
+	const dispatch = useDispatch();
+
+	const handleSubmit = (event) => {
+		event.preventDefault();
+		const data = new FormData(event.currentTarget);
+		const userData = {
+			email: data.get('email'),
+			password: data.get('password'),
+		}
+		dispatch(login(userData));
+		dispatch(getUser())
+
+	};
+
+
+
 	return (
 		<div>
 			<form onSubmit={handleSubmit}>

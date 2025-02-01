@@ -29,7 +29,7 @@ function CustomerRouter() {
 				<Route path="/account/order/:orderId" element={<OrderDetail/>}></Route>
 			</Routes>
 			<div>
-				<Footer/>
+
 			</div>
 		</div>
 	);

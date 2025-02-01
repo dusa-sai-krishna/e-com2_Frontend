@@ -1,25 +1,44 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import TextField from "@mui/material/TextField";
 import {Button, Grid} from "@mui/material";
-import LoginForm from "./LoginForm";
 import {useNavigate} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import { register, getUser } from "../../../redux/Auth/Action";
 
 
-const handleSubmit = (event) => {
-	event.preventDefault();
-	const data = new FormData(event.currentTarget);
-	const userData = {
-		firstName: data.get('firstName'),
-		lastName: data.get('lastName'),
-		email: data.get('email'),
-		password: data.get('password'),
-	}
-	console.log("userData",userData);
-};
 
 function RegisterForm() {
 
 	const navigate = useNavigate();
+	const dispatch = useDispatch();
+	const jwt = localStorage.getItem("jwt");
+	const {auth} = useSelector((store) => store);
+
+	useEffect(() => {
+		return () => {
+			if(jwt){dispatch(getUser())}
+
+		};
+	}, [jwt,auth.jwt,dispatch]);
+
+
+
+
+	const handleSubmit = (event) => {
+		event.preventDefault();
+		const data = new FormData(event.currentTarget);
+		const userData = {
+			firstName: data.get('firstName'),
+			lastName: data.get('lastName'),
+			email: data.get('email'),
+			password: data.get('password'),
+			mobile: data.get('mobile'),
+		}
+		dispatch(register(userData));
+		//redirect to login
+		navigate("/login")
+	};
+
 
 	return (
 		<div>
@@ -60,6 +79,15 @@ function RegisterForm() {
 								   label="Password"
 								   fullWidth
 								   autoComplete="password">
+						</TextField>
+					</Grid>
+					<Grid item xs={12}>
+						<TextField required
+								   id="mobile"
+								   name="mobile"
+								   label="Mobile"
+								   fullWidth
+								   autoComplete="mobile">
 						</TextField>
 					</Grid>
 					<Grid item xs={12}>
