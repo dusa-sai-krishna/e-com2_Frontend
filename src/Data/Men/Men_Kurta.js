@@ -83,7 +83,7 @@ export const mens_kurta=[
         "thirdLavelCategory": "mens_kurta",
         "description":"A traditional garment embodying elegance and grace. Crafted from fine fabrics, it features intricate embroidery and a relaxed fit, providing comfort and style."
     },
-    {
+   {
         "imageUrl": "https://rukminim1.flixcart.com/image/612/612/xif0q/kurta/i/v/x/xxl-br-ad-kt-105-adwyn-peter-original-imagj4zyd2q7t6cg.jpeg?q=70",
         "brand": "ALY JOHN",
         "title": "Men Solid Pure Cotton Straight Kurta",
@@ -111,7 +111,7 @@ export const mens_kurta=[
         "thirdLavelCategory": "mens_kurta",
         "description":"A traditional garment embodying elegance and grace. Crafted from fine fabrics, it features intricate embroidery and a relaxed fit, providing comfort and style."
     },
-    {
+     {
         "imageUrl": "https://rukminim1.flixcart.com/image/612/612/xif0q/kurta/j/a/r/l-poch521835-peter-england-original-imag7jg47g7cxhg3-bb.jpeg?q=70",
         "brand": "PETER ENGLAND",
         "title": "Men Woven Design Pure Cotton Straight Kurta",

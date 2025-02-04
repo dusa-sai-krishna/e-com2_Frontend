@@ -17,16 +17,19 @@
 */
 'use client'
 
-import { useState } from 'react'
+import {useEffect, useState} from 'react'
 import { StarIcon } from '@heroicons/react/20/solid'
 import { Radio, RadioGroup } from '@headlessui/react'
 import {Box, Button, Grid, LinearProgress, Rating} from "@mui/material";
 import ProductReviewCard from "./ProductReviewCard";
 import {mens_kurta} from "../../../Data/Men/Men_Kurta";
 import HomeSectionCard from "../HomeSectionCard/HomeSectionCard";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {findProductById} from "../../../redux/Product/Action";
+import {addItemToCart} from "../../../redux/Cart/Action";
 
-const product = {
+const staticProduct = {
     name: 'Basic Tee 6-Pack',
     price: '$192',
     href: '#',
@@ -81,20 +84,53 @@ function classNames(...classes) {
 }
 
 export default function ProductDetail() {
-    const [selectedColor, setSelectedColor] = useState(product.colors[0])
-    const [selectedSize, setSelectedSize] = useState(product.sizes[2])
+    const [selectedColor, setSelectedColor] = useState(staticProduct.colors[0])
+    const [selectedSize, setSelectedSize] = useState(staticProduct.sizes[0])
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const params = useParams()
+    const productId=params.productId
+    const {product} = useSelector(store=>store)
+    const {cart} = useSelector(store=>store)
+    const [triggerEffect, setTriggerEffect] = useState(false);  //tells me whether user has clicked on add to cart
+
+    useEffect(() => {
+        const reqData = {"productId":productId}
+        dispatch(findProductById(reqData))
+        console.log("Product By id request dispatched for id:",productId)
+    }, [params.productId]);
+
 
     const handleAddToCart = () => {
-        navigate("/cart")
+
+        const reqData = {"productId":productId,"size":selectedSize.name,"quantity":1}
+        console.log("This cart item will be added to cart:",reqData)
+        dispatch(addItemToCart(reqData))
+        setTriggerEffect(true)
     }
+
+
+    useEffect(() => {
+        if (triggerEffect && !cart.isLoading) {
+            if (cart.error){
+                Object.entries(cart.error).forEach(([key, value]) => {
+                    alert(`${key}: ${value}`);
+                });
+
+            }
+            else{
+                setTriggerEffect(false)
+                navigate("/cart")
+            }
+        }
+    }, [triggerEffect, cart.isLoading, cart.error])
 
     return (
         <div className="bg-white lg:px-20">
             <div className="pt-6">
                 <nav aria-label="Breadcrumb">
                     <ol role="list" className="mx-auto flex max-w-2xl items-center space-x-2 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-                        {product.breadcrumbs.map((breadcrumb) => (
+                        {staticProduct.breadcrumbs.map((breadcrumb) => (
                             <li key={breadcrumb.id}>
                                 <div className="flex items-center">
                                     <a href={breadcrumb.href} className="mr-2 text-sm font-medium text-gray-900">
@@ -114,7 +150,7 @@ export default function ProductDetail() {
                             </li>
                         ))}
                         <li className="text-sm">
-                            <a href={product.href} aria-current="page" className="font-medium text-gray-500 hover:text-gray-600">
+                            <a href={staticProduct.href} aria-current="page" className="font-medium text-gray-500 hover:text-gray-600">
                                 {product.name}
                             </a>
                         </li>
@@ -126,14 +162,14 @@ export default function ProductDetail() {
                     <div className="flex flex-col items-center">
                         <div className="overflow-hidden rounded-lg max-w-[30rem] max-h-[35rem]">
                             <img
-                                alt={product.images[0].alt}
-                                src={product.images[0].src}
+                                alt={staticProduct.images[0].alt}
+                                src={product.product?.imageUrl}
                                 className="h-full w-full object-cover object-center "
                             />
                         </div>
 
                         <div className="flex flex-wrap space-x-5 justify-center">
-                            {product.images.map((item) => (
+                            {staticProduct.images.map((item) => (
                                 <div className="aspect-h-2 aspect-w-3 overflow-hidden rounded-lg max-w-[5rem] max-h-[5rem] mt-4">
                                     <img
                                         alt={item.alt}
@@ -152,9 +188,9 @@ export default function ProductDetail() {
                     {/* Product info */}
                     <div className="lg:col-span-1 maxt-auto max-w-2xl px-4 pb-16 sm:px-6 lg:max-w-7xl lg:px-8 lg:pb-24">
                         <div className="lg:col-span-2">
-                            <h1 className="text-lg lg:text-xl font-semibold text-gray-900 text-left">Universaloutfit</h1>
+                            <h1 className="text-lg lg:text-xl font-semibold text-gray-900 text-left">{product.product?.brand}</h1>
                             <h1 className="text-lg lg:text-xl text-gray-900 opacity-60 pt-1 text-left ">
-                                Casual Puff Sleevs Solid Women White Top
+                                {product.product?.title}
                             </h1>
                         </div>
 
@@ -162,9 +198,9 @@ export default function ProductDetail() {
                         <div className="mt-4 lg:row-span-3 lg:mt-0">
                             <h2 className="sr-only">Product information</h2>
                            <div className="flex space-x-5 items-center text-lg lg:text-xl text-gray-900 mt-6">
-                               <p className="font-semibold">₹199</p>
-                               <p className="opacity-50 line-through">₹211</p>
-                               <p className="text-green-600 font-semibold">5% off</p>
+                               <p className="font-semibold">{product.product?.discountedPrice}</p>
+                               <p className="opacity-50 line-through">{product.product?.price}</p>
+                               <p className="text-green-600 font-semibold">{product.product?.discountPercentage}% off</p>
                            </div>
 
                             {/* Reviews */}
@@ -193,7 +229,7 @@ export default function ProductDetail() {
                                             onChange={setSelectedSize}
                                             className="grid grid-cols-4 gap-4 sm:grid-cols-8 lg:grid-cols-4"
                                         >
-                                            {product.sizes.map((size) => (
+                                            {staticProduct.sizes.map((size) => (
                                                 <Radio
                                                     key={size.name}
                                                     value={size}
@@ -246,7 +282,7 @@ export default function ProductDetail() {
                                 <h3 className="sr-only">Description</h3>
 
                                 <div className="space-y-6">
-                                    <p className="text-base text-gray-900">{product.description}</p>
+                                    <p className="text-base text-gray-900">{staticProduct.description}</p>
                                 </div>
                             </div>
 
@@ -255,7 +291,7 @@ export default function ProductDetail() {
 
                                 <div className="mt-4">
                                     <ul role="list" className="list-disc space-y-2 pl-4 text-sm">
-                                        {product.highlights.map((highlight) => (
+                                        {staticProduct.highlights.map((highlight) => (
                                             <li key={highlight} className="text-gray-400">
                                                 <span className="text-gray-600">{highlight}</span>
                                             </li>
@@ -268,7 +304,7 @@ export default function ProductDetail() {
                                 <h2 className="text-sm font-medium text-gray-900">Details</h2>
 
                                 <div className="mt-4 space-y-6">
-                                    <p className="text-sm text-gray-600">{product.details}</p>
+                                    <p className="text-sm text-gray-600">{staticProduct.details}</p>
                                 </div>
                             </div>
                         </div>

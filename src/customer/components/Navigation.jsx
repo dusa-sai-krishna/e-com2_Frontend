@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import {Fragment, useEffect, useState} from "react";
 import { Dialog, Popover, Tab, Transition } from "@headlessui/react";
 import {
     Bars3Icon,
@@ -11,9 +11,12 @@ import { Avatar, Button, Menu, MenuItem } from "@mui/material";
 import { deepPurple } from "@mui/material/colors";
 import {navigation} from "../../Data/Navigation/NavigationData";
 
-import TextField from "@mui/material/TextField";
-import {useNavigate} from "react-router-dom";
+
+import {useLocation, useNavigate} from "react-router-dom";
 import AuthModal from "./auth/AuthModal";
+import {useDispatch, useSelector} from "react-redux";
+import {getUser, logout} from "../../redux/Auth/Action";
+
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -24,10 +27,11 @@ export default function Navigation() {
     const [openAuthModal, setOpenAuthModal] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const openUserMenu = Boolean(anchorEl);
-    const jwt = localStorage.getItem("jwt");
-    const navigate = useNavigate()
-
-
+    const navigate = useNavigate();
+    const location = useLocation()
+    // const jwt = localStorage.getItem("jwt");
+    const {auth} = useSelector((store) => store);
+const dispatch = useDispatch();
 
 
     const handleUserClick = (event) => {
@@ -38,19 +42,38 @@ export default function Navigation() {
     };
 
     const handleOpen = () => {
+        dispatch(logout())
         setOpenAuthModal(true);
     };
     const handleClose = () => {
         setOpenAuthModal(false);
     };
 
+    const handleLogout = () => {
+        dispatch(logout())
+        handleCloseUserMenu()
+    };
+
+
     const handleCategoryClick = (category, section, item, close) => {
-       navigate(`/${category.id}/${section.id}/${item.id}`);
+       navigate(`/${category.id}/${section.id}/${item.id}`); //lavelOne / lavelTwo / lavelThree
         close();
     };
 
 
+    useEffect(() => {
+        if (auth && auth.jwt) {
+            handleClose();
+            if(location.pathname === "/login" || location.pathname === "/register"){
+                console.log("Navigation Form Previous Page redirection triggered")
+                navigate(-1);
+            }
+        }
+    }, [auth.jwt]);
 
+    useEffect(() => {
+        if(auth && auth.jwt)  dispatch(getUser(auth.jwt))
+    }, [location.pathname]);
 
 
     return (
@@ -383,7 +406,7 @@ export default function Navigation() {
 
                             <div className="ml-auto flex items-center">
                                 <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
-                                    {false ?(
+                                    {auth.user?.lastName ?(
                                         <div>
                                             <Avatar
                                                 className="text-white"
@@ -397,7 +420,7 @@ export default function Navigation() {
                                                     cursor: "pointer",
                                                 }}
                                             >
-                                                S
+                                                {auth.user?.lastName.charAt(0).toUpperCase()}
                                             </Avatar>
                                             {/* <Button
                         id="basic-button"
@@ -417,8 +440,9 @@ export default function Navigation() {
                                                     "aria-labelledby": "basic-button",
                                                 }}
                                             >
-                                               <MenuItem>Profile </MenuItem><MenuItem onClick={()=>navigate("/account/order")}>My Orders</MenuItem>
-                                                <MenuItem>Logout</MenuItem>
+                                               <MenuItem>Profile </MenuItem>
+                                                <MenuItem onClick={()=>navigate("/account/order")}>My Orders</MenuItem>
+                                                <MenuItem onClick={handleLogout}>Logout</MenuItem>
                                             </Menu>
                                         </div>
                                     ) : (

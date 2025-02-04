@@ -1,10 +1,13 @@
 import React from 'react';
 import {useNavigate} from "react-router-dom";
 
+
 function ProductCard({product}) {
+
     const navigate = useNavigate();
+
     return (
-        <div onClick={navigate(`/product/${5}`)} className="productCard w-[15rem] m-3 transition-all cursor-pointer">
+        <div  onClick={()=>{navigate(`/product/${product.id}`)}} className="productCard w-[15rem] m-3 transition-all cursor-pointer">
             <div className="h-[20rem] hover:z-40 hover:bg-amber-600">
                 <img className="h-[19.9rem] w-[14.9rem] object-cover object-left-top" src={product.imageUrl}
                      alt="A Women Wearing Dress"/>

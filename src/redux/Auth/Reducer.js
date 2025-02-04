@@ -11,7 +11,7 @@ import {
 const initialSate ={
 
 	user:null,
-	isLoading:false,
+	isLoading:true,
 	error:null,
 	jwt:null
 }
@@ -24,6 +24,7 @@ export const authReducer=(state=initialSate,action)=>{
 			return {...state,isLoading:true,error:null}
 
 		case REGISTER_SUCCESS:
+			return{...state,isLoading:false,error:null,jwt:null}
 		case LOGIN_SUCCESS:
 			return {...state,isLoading:false,jwt:action.payload,error:null}
 

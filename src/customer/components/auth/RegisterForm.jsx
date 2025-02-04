@@ -3,7 +3,7 @@ import TextField from "@mui/material/TextField";
 import {Button, Grid} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import { register, getUser } from "../../../redux/Auth/Action";
+import { register } from "../../../redux/Auth/Action";
 
 
 
@@ -11,16 +11,21 @@ function RegisterForm() {
 
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
-	const jwt = localStorage.getItem("jwt");
 	const {auth} = useSelector((store) => store);
 
 	useEffect(() => {
-		return () => {
-			if(jwt){dispatch(getUser())}
+		if (!auth.isLoading) {
 
-		};
-	}, [jwt,auth.jwt,dispatch]);
+			if (auth.error === null) {
+				navigate('/login');
+			} else {
 
+				Object.entries(auth.error).forEach(([key, value]) => {
+					alert(`${key}: ${value}`);
+				});
+			}
+		}
+	}, [auth.isLoading, auth.error, navigate]);
 
 
 
@@ -35,9 +40,12 @@ function RegisterForm() {
 			mobile: data.get('mobile'),
 		}
 		dispatch(register(userData));
-		//redirect to login
-		navigate("/login")
+
+		//use effect
 	};
+
+
+
 
 
 	return (

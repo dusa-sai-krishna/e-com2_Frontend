@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import {useEffect, useState} from 'react'
 import {
     Dialog,
     DialogBackdrop,
@@ -15,11 +15,13 @@ import {
 } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon } from '@heroicons/react/20/solid'
-import {mens_kurta} from "../../../Data/Men/Men_Kurta";
 import ProductCard from "./ProductCard";
 import {filters, singleFilter} from "../../../Data/ProductFilterData";
 import {FormControl, FormControlLabel, FormLabel, Pagination, Radio, RadioGroup} from "@mui/material";
-import {useLocation, useNavigate} from "react-router-dom";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {findProducts} from "../../../redux/Product/Action";
+
 
 const sortOptions = [
     { name: 'Price: Low to High', href: '#', current: false },
@@ -35,8 +37,55 @@ export default function Product() {
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
     const location = useLocation()
     const navigate = useNavigate()
+    const param = useParams()
+    const dispatch = useDispatch()
+    //getting query params from url.
+    const decodedQueryString = decodeURIComponent(location.search);
+    const searchParams = new URLSearchParams(decodedQueryString);
+    const colorValue=searchParams.get("color")
+    const sizeValue=searchParams.get("size")
+    const priceValue = searchParams.get("price")
+    const discountValue = searchParams.get("discount")
+    const sortValue = searchParams.get("sort")
+    const pageNumberValue = searchParams.get("page") || 1; //if not found, by default 1
+    const stock = searchParams.get("stock")
+    const {product} = useSelector((store)=> store)
+
+    useEffect(() => {
+        const [minPrice,maxPrice]=(priceValue===null)?[0,10000]:priceValue.split("-").map(Number);
+        const data={
+            category:param.lavelThree,
+            color:colorValue || [],
+            size: sizeValue || [],
+            minPrice: minPrice,
+            maxPrice: maxPrice,
+            minDiscount: discountValue || 0,
+            sort: sortValue || "price_low",
+            pageNumber: pageNumberValue-1 || 0, // zero based indexing,
+            pageSize: 10,
+            stock: stock || "in_stock"
+        }
+
+        console.log("This data is dispatched from Products.jsx",data)
+        dispatch(findProducts(data))
+
+
+    }, [param.lavelThree,
+        colorValue,
+        sizeValue,
+        priceValue,
+        discountValue,
+        sortValue,
+        pageNumberValue,
+        stock]
+        );
+
+
     const handleFilter = (value, sectionId) => {
         const searchParams = new URLSearchParams(location.search)
+        // console.log("value", value)
+        // console.log("sectionId", sectionId)
+        // console.log("searchParams", searchParams)
 
         let filterValue = searchParams.getAll(sectionId)
 
@@ -49,12 +98,13 @@ export default function Product() {
         } else {
             filterValue.push(value)
         }
-
+    // console.log(filterValue)
     if (filterValue.length > 0) {
         searchParams.set(sectionId, filterValue.join(","))
 
     }
         const query = searchParams.toString()
+        console.log(query);
         navigate({search: `?${query}`})
 }
 
@@ -63,7 +113,16 @@ const handleRadioFilterChange=(e,sectionId)=>{
 
         searchParams.set(sectionId,e.target.value)
         const query = searchParams.toString()
+        console.log(query)
         navigate({search: `?${query}`})
+}
+
+const handlePaginationChange=(event,value)=>{
+        const searchParams = new URLSearchParams(location.search)
+        searchParams.set("page",value)
+        const query=searchParams.toString()
+        console.log(query);
+    navigate({search: `?${query}`})
 }
 
     return (
@@ -318,16 +377,19 @@ const handleRadioFilterChange=(e,sectionId)=>{
                             {/* Product grid */}
                             <div className="lg:col-span-4">
                                 <div className="flex flex-wrap justify-center bg-white py-5">
-                                    {mens_kurta.map((product) => (
-                                        <ProductCard product={product}/>
-                                    ))}
+                                    {product && product.products?.content?.map((item)=>(<ProductCard product={item}/>))}
                                 </div>
                             </div>
                         </div>
                     </section>
+                    <section className="w-full px=[3.6rem]">
+                        <div className="px-4 py-5 flex justify-center">
+                            <Pagination count={product.products?.totalPages} color="secondary" onChange={handlePaginationChange}/>
+                        </div>
+                    </section>
                 </main>
             </div>
-            <Pagination count={10} color="secondary" />
+
         </div>
 
     )

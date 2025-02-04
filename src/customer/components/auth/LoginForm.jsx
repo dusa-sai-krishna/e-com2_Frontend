@@ -1,18 +1,30 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import TextField from "@mui/material/TextField";
 import {Button, Grid} from "@mui/material";
 import {useNavigate} from "react-router-dom";
-import {getUser, login} from "../../../redux/Auth/Action";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import { login} from "../../../redux/Auth/Action";
 
 
 
 
 function LoginForm() {
-
-
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
+	const {auth} = useSelector((store) => store);
+
+
+	useEffect(() => {
+		if (!auth.isLoading) {
+			if (auth.error){
+				Object.entries(auth.error).forEach(([key, value]) => {
+					alert(`${key}: ${value}`);
+				});
+			}
+		}
+	}, [auth.isLoading, auth.error])
+
+
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
@@ -22,7 +34,6 @@ function LoginForm() {
 			password: data.get('password'),
 		}
 		dispatch(login(userData));
-		dispatch(getUser())
 
 	};
 

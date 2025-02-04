@@ -17,6 +17,8 @@ const registerRequest=()=>({type:REGISTER_REQUEST});
 const registerSuccess=(user)=>({type:REGISTER_SUCCESS,payload:user});
 const registerFailure=(error)=>({type:REGISTER_FAILURE,payload:error});
 
+// place jwt as null
+// localStorage.setItem("jwt",null);
 
 
 
@@ -26,15 +28,13 @@ export const register = (userData)=> async (dispatch)=> {
 	try {
 		const response = await axios.post(`${API_BASE_URL}/auth/register`, userData);
 
-		const user = response.data;
-
-		//console.log(user)
-		dispatch(registerSuccess(user.jwt));
+		console.log("Received Register response",response.data)
+		dispatch(registerSuccess());
 
 	} catch (error) {
 		console.log("error",error.message)
-		console.log("response",error.response.data)
-		dispatch(registerFailure(error.message));
+		console.log(" Register response",error.response)
+		dispatch(registerFailure(error.response.data));
 	}
 }
 
@@ -55,13 +55,14 @@ export const login = (userData)=> async (dispatch)=> {
 		const user = response.data;
 		if(user.jwt){
 			localStorage.setItem("jwt", user.jwt);
+			console.log("Inserted jwt",localStorage.getItem("jwt"))
 		}
-		//console.log("user",user)
-		dispatch(loginSuccess(user));
+		console.log("Recieved login response ",user)
+		dispatch(loginSuccess(user.jwt));
 	} catch (error) {
-		console.log("error",error.message)
-		console.log("response",error.response.data)
-		dispatch(loginFailure(error.message));
+		console.log(" Login error",error.message)
+		console.log("Login response",error.response)
+		dispatch(loginFailure(error.response.data));
 	}
 }
 
@@ -69,10 +70,10 @@ export const login = (userData)=> async (dispatch)=> {
 const getUserRequest=()=>({type:GET_USER_REQUEST});
 const getUserSuccess=(user)=>({type:GET_USER_SUCCESS,payload:user});
 const getUserFailure=(error)=>({type:GET_USER_FAILURE,payload:error});
-const jwt = localStorage.getItem("jwt");
 
 
-export const getUser = ()=> async (dispatch)=> {
+
+export const getUser = (jwt)=> async (dispatch)=> {
 	dispatch(getUserRequest());
 	try {
 
@@ -82,15 +83,18 @@ export const getUser = ()=> async (dispatch)=> {
 			}
 		});
 		const user = response.data;
-		//console.log("user",user)
+		console.log("Received User Request",user)
 		dispatch(getUserSuccess(user));
 	} catch (error) {
-		console.log("error",error.message)
-		console.log("response",error.response.data)
-		dispatch(getUserFailure(error.message));
+		console.log(" getUser error",error.message)
+		console.log("getUser response",error.response)
+		console.log("getUse jwt:",jwt)
+		dispatch(getUserFailure(error.response.data));
 	}
 }
 
 export const logout = () => (dispatch) => {
+	console.log("Logout clicked!!!.")
 	dispatch({type: LOGOUT, payload: null});
+	localStorage.clear();
 }
