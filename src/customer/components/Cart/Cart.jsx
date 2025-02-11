@@ -29,7 +29,7 @@ function Cart() {
         <>
             <div className="lg:grid grid-cols-3 lg:px-16 relative text-left">
                 <div className="col-span-2">
-                    {cart.cartItems?.map((item)=><CartItem cartItem={item}/>)}
+                    {cart.cartItems?.map((item)=><CartItem cartItem={item} checkout={false}/>)}
 
                 </div>
                 {/*Price, discount and Checkout Card*/}

@@ -22,6 +22,7 @@ function DeliveryAddressForm() {
             city: data.get('city'),
             state: data.get('state'),
             zipCode: data.get('zip'),
+            phoneNumber: data.get('phoneNumber')
 
         }
         dispatch(createOrder({"address":address,"navigate":navigate}));

@@ -12,7 +12,7 @@ function OrderSummary() {
     const querySearch = new URLSearchParams(location.search);
     const orderId =Number( querySearch.get("orderId"))
     const {order} = useSelector(store=>store);
-    const {cart} = useSelector(store=>store);
+
 
     const dispatch = useDispatch()
 
@@ -21,24 +21,16 @@ function OrderSummary() {
     }, [orderId]);
 
 
-    //default render
-    useEffect(() => {
-        dispatch(getCart())
-    }, []);
-
-    useEffect(() => {
-        dispatch(getCart())
-    }, [cart.updateCartItem,cart.deleteCartItem]);
 
 
     return (
         <div>
             <div className="p-5 shadow-lg rounded-s-md border">
-                <AddressCard/>
+                <AddressCard address={order?.order?.shippingAddress}/>
             </div>
             <div className="lg:grid grid-cols-3  relative text-left">
                 <div className="col-span-2">
-                    {order.order?.orderItems.map((cartItem) => <CartItem cartItem={cartItem} />)}
+                    {order.order?.orderItems.map((cartItem) => <CartItem cartItem={cartItem} checkout={true} />)}
 
                 </div>
                 {/*Price, discount and Checkout Card*/}
