@@ -16,6 +16,7 @@ import {useLocation, useNavigate} from "react-router-dom";
 import AuthModal from "./auth/AuthModal";
 import {useDispatch, useSelector} from "react-redux";
 import {getUser, logout} from "../../redux/Auth/Action";
+import {getCart} from "../../redux/Cart/Action";
 
 
 function classNames(...classes) {
@@ -31,6 +32,7 @@ export default function Navigation() {
     const location = useLocation()
     // const jwt = localStorage.getItem("jwt");
     const {auth} = useSelector((store) => store);
+    const {cart} = useSelector((store) => store);
 const dispatch = useDispatch();
 
 
@@ -76,7 +78,11 @@ const dispatch = useDispatch();
     }, [auth.jwt]);
 
     useEffect(() => {
-        if(auth && auth.jwt)  dispatch(getUser(auth.jwt))
+        if(auth && auth.jwt)  {
+            dispatch(getUser(auth.jwt))
+            dispatch(getCart())
+        }
+
     }, [location.pathname]);
 
 
@@ -482,7 +488,7 @@ const dispatch = useDispatch();
                                             aria-hidden="true"
                                         />
                                         <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
-                      2
+                      {cart.cartItems?.length}
                     </span>
                                         <span className="sr-only">items in cart, view bag</span>
                                     </Button>

@@ -17,19 +17,31 @@ const PaymentSuccess = () => {
 
 	const dispatch = useDispatch();
 	const {order} = useSelector(store=>store);
+	const urlParam = new URLSearchParams(window.location.search);
 
+	console.log("PaymentSucess.jsx OrderId",orderId)
 
 	useEffect(() => {
-		const urlParam = new URLSearchParams(window.location.search);
-		setPaymentId(urlParam.get("razorpay_payment_link_id"));
+
+		setPaymentId(urlParam.get("razorpay_payment_id"));
 		setPaymentStatus(urlParam.get("razorpay_payment_link_status"));
+		// console.log("PaymentSucess.jsx PaymentId",paymentId)
+		// console.log("PaymentSucess.jsx PaymentStatus",paymentStatus)
 
-	}, []);
+	}, [urlParam]);
+
+
 
 	useEffect(() => {
-		const data =[orderId,paymentId];
-		dispatch(getOrderByID(Number(orderId)));
-		dispatch(updatePayment(data));
+
+		if(paymentId){
+			setTimeout(() => {
+
+				const data ={orderId,paymentId};
+				dispatch(getOrderByID({orderId}));
+				dispatch(updatePayment(data));
+			}, 2000);
+		}
 	}, [orderId,paymentId]);
 
 	return (
@@ -61,16 +73,16 @@ const PaymentSuccess = () => {
 							<div className="ml-5 space-y-2 ">
 								<p>{item?.product?.title}</p>
 								<div className="opacity-50 text-xs font-semibold space-x-5">
-									<span>Color: {item?.colo}</span>
-									<span>Size: item.size</span>
+									<span>Color: {item?.product?.color}</span>
+									<span>Size: {item.size}</span>
 								</div>
-								<p>Seller: item.product.brand</p>
-								<p>₹item.price</p>
+								<p>Seller:{item?.product?.brand}</p>
+								<p>₹{item?.price}</p>
 							</div>
 						</div>
 					</Grid>
 					<Grid item>
-						<AddressCard address={""}/>
+						<AddressCard address={order?.order?.shippingAddress}/>
 					</Grid>
 				</Grid>)}
 

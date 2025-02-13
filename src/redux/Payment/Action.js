@@ -25,6 +25,8 @@ export const createPayment = (orderId) => async (dispatch)=>{
 
 export const updatePayment = (reqData) => async (dispatch)=>{
 
+	console.log("Payment Action.js updatePayment reqData",reqData);
+
 	dispatch({type:UPDATE_PAYMENT_REQUEST});
 
 	try{
