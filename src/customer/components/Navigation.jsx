@@ -61,6 +61,10 @@ const dispatch = useDispatch();
     };
 
 
+    const handleCartIcon=()=>{
+        navigate(`/cart`)
+    }
+
     useEffect(() => {
         if (auth && auth.jwt) {
             handleClose();
@@ -470,7 +474,7 @@ const dispatch = useDispatch();
 
                                 {/* Cart */}
                                 <div className="ml-4 flow-root lg:ml-6">
-                                    <Button
+                                    <Button onClick={handleCartIcon}
                                         className="group -m-2 flex items-center p-2"
                                     >
                                         <ShoppingBagIcon

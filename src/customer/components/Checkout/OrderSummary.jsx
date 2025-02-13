@@ -6,6 +6,7 @@ import {useLocation} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {getOrderByID} from "../../../redux/Order/Action";
 import {getCart} from "../../../redux/Cart/Action";
+import {createPayment} from "../../../redux/Payment/Action";
 
 function OrderSummary() {
     const location = useLocation();
@@ -21,6 +22,9 @@ function OrderSummary() {
     }, [orderId]);
 
 
+    const handleCheckout = ()=>{
+        dispatch(createPayment(orderId))
+    }
 
 
     return (
@@ -56,7 +60,7 @@ function OrderSummary() {
                                 <span className="text-green-600">₹`1278</span>
                             </div>
                         </div>
-                        <Button variant="contained" className="w-full mt-5"
+                        <Button variant="contained" className="w-full mt-5" onClick={handleCheckout}
                                 sx={{px: "2.5rem", py: "1rem", bgcolor: "#9155fd"}}>
                             Checkout
                         </Button>

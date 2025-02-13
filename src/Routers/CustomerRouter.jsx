@@ -8,6 +8,7 @@ import ProductDetail from "../customer/components/Product/ProductDetail";
 import Checkout from "../customer/components/Checkout/Checkout";
 import Order from "../customer/components/Order/Order";
 import OrderDetail from "../customer/components/Order/OrderDetail";
+import PaymentSuccess from "../customer/components/Payment/PaymentSuccess";
 
 function CustomerRouter() {
 	return (
@@ -26,6 +27,7 @@ function CustomerRouter() {
 				<Route path="/checkout" element={<Checkout/>}></Route>
 				<Route path="/account/order" element={<Order/>}></Route>
 				<Route path="/account/order/:orderId" element={<OrderDetail/>}></Route>
+				<Route path="/payment/:orderId" element={<PaymentSuccess/>}></Route>
 			</Routes>
 			<div>
 
